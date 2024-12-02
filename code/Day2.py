@@ -1,6 +1,8 @@
+# Standard Imports
+from copy import deepcopy
+#Local Imports
 from utils import read_file
 
-from copy import deepcopy
 
 def parse_file(filename):
     lines = read_file(filename)
@@ -28,6 +30,7 @@ def check_safe(data: list[int]) -> bool:
         return False
     return True
 
+
 def remove_one(line: list[int]) -> bool:
     for index in range(len(line)):
         new_line = deepcopy(line)
@@ -37,26 +40,17 @@ def remove_one(line: list[int]) -> bool:
     return False
         
 data = parse_file("input/day2.txt")
-# Part one
 Unsafe = 0
 Safe = 0 
-for line in data:
-    if check_safe(line):
-        Safe +=1
-    else:
-        Unsafe += 1
-
-# print(Safe)
-
-# Part 2
-Unsafe = 0
-Safe = 0 
+Kinda_safe = 0
 for line in data:
     if check_safe(line):
         Safe += 1
+        Kinda_safe += 1
     elif remove_one(line):
-        Safe += 1
+        Kinda_safe += 1
     else:
         Unsafe += 1
 
-print(Safe)
+# Safe is the answer for part one, Kinda Safe is for Part two
+print(f"{Safe=}, {Kinda_safe=}")
