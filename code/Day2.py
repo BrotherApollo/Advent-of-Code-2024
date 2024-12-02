@@ -16,9 +16,9 @@ def check_safe(data: list[int]) -> bool:
     decreasing = False
     for i in range(len(data)-1):
         first, second = data[i:i+2]
-        if first - second < 0:
-            decreasing = True
         if first - second > 0:
+            decreasing = True
+        if first - second < 0:
             increasing = True
 
         if abs(first - second) > 3:
