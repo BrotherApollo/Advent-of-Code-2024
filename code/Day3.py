@@ -6,7 +6,7 @@ with open("input/day3.txt", "r") as file:
 
 results = re.findall(
     # This is a two part regex, the | works as an or statment
-    r"([mul]{2,3}\([\d]{1,5},[\d]{1,5}\)|[don't]{2,5}\(\))",
+    r"(mul\([\d]{1,5},[\d]{1,5}\)|[don't]{2,5}\(\))",
     data
     )
 
@@ -26,5 +26,5 @@ for func in results:
             total += temp
     else:
         print(f'something went wrong, {func}')
-        
+
 print(total)
