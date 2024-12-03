@@ -1,19 +1,17 @@
 # Standard Import
 import re
 
-
-
-
-
 with open("input/day3.txt", "r") as file:
     data = file.read()
 
-results = re.findall(r"([mul]{2,3}\([\d]{1,5},[\d]{1,5}\)|[don't]{2,5}\(\))", data)
-# print(results)
+results = re.findall(
+    # This is a two part regex, the | works as an or statment
+    r"([mul]{2,3}\([\d]{1,5},[\d]{1,5}\)|[don't]{2,5}\(\))",
+    data
+    )
+
 total = 0
-# for thing in results:
-#     if "mul" not in thing:
-#         print(thing)
+
 execute = True
 for func in results:
     func.strip("' ")
@@ -28,4 +26,5 @@ for func in results:
             total += temp
     else:
         print(f'something went wrong, {func}')
+        
 print(total)
