@@ -15,9 +15,7 @@ test = [list(f"....{x}....") for x in test if x]
 data = [list(f"...{x}....") for x in read_file("input/day4.txt")]
 buffer = [['.' for x in range(len(data[0]))]for x in range(4)]
 word_search = np.array(buffer+data+buffer)
-print(word_search)
-
-    
+# print(word_search)    
 
 # a function to grab all the possible correct answers for each postion
 def look_around(word_search, row, col):
@@ -37,12 +35,28 @@ def look_around(word_search, row, col):
     ]
     return matches
 
-count = 0
+def check_x(word_search, row, col):
+    grid = word_search
+    matches = [
+        # diagonal
+        [grid[row-1][col-1], grid[row][col], grid[row+1][col+1]],  # SE
+        [grid[row+1][col+1], grid[row][col], grid[row-1][col-1]],  # NW
+        [grid[row+1][col-1], grid[row][col], grid[row-1][col+1]],  # NE
+        [grid[row-1][col+1], grid[row][col], grid[row+1][col-1]],  # SW
+    ]
+    return matches
+
+xmasCount = 0
+x_masCount = 0
 for row in range(len(word_search)):
     for col in range(len(word_search[row])):
-        if word_search[row][col] != "X":
-            continue
-        matches = look_around(word_search, row, col)
-        count += len([match for match in matches if ''.join(match)=="XMAS"])
+        if word_search[row][col] == "X":
+            matches = look_around(word_search, row, col)
+            xmasCount += len([match for match in matches if ''.join(match)=="XMAS"])
+        if word_search[row][col] == "A":
+            matches = check_x(word_search, row, col)
+            if len([x for x in matches if ''.join(x) == "MAS"]) == 2:
+                x_masCount +=1
 
-print(count)
+print(xmasCount)
+print(x_masCount)
