@@ -13,8 +13,9 @@ class Depresser(object):
 
         # Part 2
         self.part2_compress()
+        # print(self.data)
         self.data = self.flatten_lists(self.data)
-
+        
         print("generating checksum")
         self.chekcsum = self.total()
 
@@ -35,6 +36,7 @@ class Depresser(object):
         return output
     
     def find_location(self, data_set, curr_index):
+        # print(self.data)
         for index, item in enumerate(self.data):
             if index > curr_index:
                 break
@@ -54,8 +56,9 @@ class Depresser(object):
                 size_diff = len(old_data) - len(item)
                 self.data[curr_index] = ["." for x in item]
                 self.data[new_index] = item
+                # print(f"{size_diff=}, {old_data}, {item}")
                 if size_diff:
-                    data.insert(new_index+1, ["." for x in range(size_diff)])
+                    self.data.insert(new_index+1, ["." for x in range(size_diff)])
     
     def flatten_lists(self, data):
         output = []
@@ -93,9 +96,9 @@ class Depresser(object):
 
 
 # Main
-# lines = read_file("input/day9.txt")
-# data = list(lines[0])
-data = list("2333133121414131402")
+lines = read_file("input/day9.txt")
+data = list(lines[0])
+# data = list("2333133121414131402")
 # print(data)
 
 depress = Depresser(data)
