@@ -5,9 +5,16 @@ class Depresser(object):
     def __init__(self, rawdata):
         self.rawdata = rawdata
         print("starting the data breakout")
-        self.data = self.flatten_lists(self.break_out())
+        self.data = self.break_out()
         print("finished breakout, starting compression")
-        self.compress()
+        # Part 1
+        # self.data = self.flatten_lists(self.data)
+        # self.compress() 
+
+        # Part 2
+        self.part2_compress()
+        self.data = self.flatten_lists(self.data)
+
         print("generating checksum")
         self.chekcsum = self.total()
 
@@ -20,16 +27,35 @@ class Depresser(object):
             if empty:
                 empty = que.pop(0)
                 output.append(["." for x in range(int(empty))])
-                # print(f"{index=}, {empty=}")
-                # print(output)
             else:
                 data = que.pop(0)
                 output.append([index for x in range(int(data))])
                 index +=1
-                # print(f"{index=}, {data=}")
-                # print(output)
             empty = not empty
         return output
+    
+    def find_location(self, data_set, curr_index):
+        for index, item in enumerate(self.data):
+            if index > curr_index:
+                break
+            if "." in item:
+                if len(item) >= len(data_set):
+                    return index
+
+    def part2_compress(self):
+        for reverse_index, item in enumerate(self.data[::-1]):
+            curr_index = self.data.index(item)
+
+            if "." not in item:
+                new_index = self.find_location(data_set=item, curr_index=curr_index)
+                if not new_index:
+                    continue
+                old_data = self.data[new_index]
+                size_diff = len(old_data) - len(item)
+                self.data[curr_index] = ["." for x in item]
+                self.data[new_index] = item
+                if size_diff:
+                    data.insert(new_index+1, ["." for x in range(size_diff)])
     
     def flatten_lists(self, data):
         output = []
@@ -67,15 +93,12 @@ class Depresser(object):
 
 
 # Main
-# data = list("2333133121414131402")
-# print(data)
-"00...111...2...333.44.5555.6666.777.888899"
-
-lines = read_file("input/day9.txt")
-data = list(lines[0])
+# lines = read_file("input/day9.txt")
+# data = list(lines[0])
+data = list("2333133121414131402")
 # print(data)
 
 depress = Depresser(data)
 
-# # print(depress.data)
+# print(depress.data)
 print(depress.chekcsum)
