@@ -25,7 +25,6 @@ def map_grids(matrix):
                 dic[cell] = [(row, col)]
     return dic
 
-
 def get_diff(a:tuple, b:tuple):
     row = a[0] - b[0]
     col = a[1] - b[1]
@@ -64,7 +63,6 @@ def validate_node(node):
         valid = False
     # print(valid)
     return valid
-
 
 matrix = data
 
