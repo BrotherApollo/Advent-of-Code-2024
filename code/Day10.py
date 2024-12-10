@@ -93,11 +93,11 @@ class Pathfinder():
 
     def BFS(self, point):
         starting_path = [point]
-        que = [starting_path]
+        queue = [starting_path]
         visited = []
         valid_paths = []
-        while que:
-            path = que.pop(0)
+        while queue:
+            path = queue.pop(0)
             curr_pos = path[-1]
             visited.append(curr_pos)
             curr_value = self.get_value(curr_pos)
@@ -110,7 +110,7 @@ class Pathfinder():
                 if neighbor_value == curr_value + 1:
                     new_path = deepcopy(path)
                     new_path.append(neighbor)
-                    que.append(new_path)
+                    queue.append(new_path)
                     print(new_path)
         return valid_paths
 
