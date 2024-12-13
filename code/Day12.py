@@ -8,6 +8,7 @@ class Plot(object):
         self.map =  map
         self.starting_point = starting_point
         self.tiles = self.BFS()
+        self.filter_count_sides()
         self.set_stats()
 
     def __repr__(self):
@@ -36,7 +37,61 @@ class Plot(object):
             perimeter += tile.fence
         self.area = area
         self.perimeter = perimeter
-        self.price = area * perimeter
+        self.part1_price = area * perimeter
+        self.part2_price = area * self.sides
+
+    def filter_count_sides(self):
+        rows = set([x[0] for x in self.points])
+        cols = set(x[1] for x  in self.points)
+        north_fences = []
+        south_fences = []
+        west_fences = []
+        east_fences = []
+        for row in rows:
+            curr_row = [tile for tile in self.tiles if tile.point[0] == row]
+            north_fences.append(sorted(
+                [x for x in curr_row if "north" in x.fence_dirs],
+                key=lambda x : x.point[1])
+                )
+            south_fences.append(sorted(
+                [x for x in curr_row if "south" in x.fence_dirs],
+                key=lambda x : x.point[1])
+                )
+        for col in cols:
+            curr_col = [tile for tile in self.tiles if tile.point[1] == col]
+            west_fences.append(
+                sorted([x for x in curr_col if "west" in x.fence_dirs],
+                key=lambda x : x.point[0])
+                )
+            east_fences.append(sorted(
+                [x for x in curr_col if "east" in x.fence_dirs],
+                key=lambda x : x.point[0])
+                )
+        sides = sum([
+            self.sets(north_fences),
+            self.sets(south_fences),
+            self.sets(east_fences),
+            self.sets(west_fences)
+        ])
+        self.sides = sides
+    
+    def sets(self, groups):
+        sides = 0
+        for group in groups:
+            queue = group
+            seen = []
+            # sides = 0
+            while queue:
+                curr = queue.pop(0)
+                if curr in seen:
+                    continue
+                seen.append(curr.point)
+                bool_bag = [neighbor.point in seen for neighbor in curr.neighbors]
+                if any(bool_bag):
+                    continue
+                sides += 1
+
+        return sides
             
 
 class Tile():
@@ -82,7 +137,6 @@ class Tile():
                 neighbor_dirs.append("west")
         self.fence_dirs = [x for x in fence_dirs if x not in neighbor_dirs]
             
-
     def set_neighbors(self, neighbors) -> None:
         self.neighbors = neighbors
         self.set_fence()
@@ -103,15 +157,21 @@ class Tile():
         valid_neighbors = [x for x in neighbors if x.symbol == self.symbol]
         self.set_neighbors(valid_neighbors)
         return valid_neighbors
+    
 
-test = """EEEEE
-EXXXX
-EEEEE
-EXXXX
-EEEEE""".split("\n")
+test = """RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE""".split("\n")
 
-map = np.array([list(x) for x in test])
-# map = np.array([list(x) for x in read_file("input/day12.txt")])
+# map = np.array([list(x) for x in test])
+map = np.array([list(x) for x in read_file("input/day12.txt")])
 
 print(map)
 big_points = []
@@ -126,63 +186,14 @@ for row in range(len(map)):
         plots.append(plot)
         big_points.extend(plot.points)
 
-# Part 1
-# total = 0
-# for plot in plots:
-#     total += plot.price
-#     print(plot)
-# print(f"total price: {total}")
+#Part 1
+part1_total = 0
+for plot in plots:
+    part1_total += plot.part1_price
+print(part1_total)
 
 # Part 2
+part2_total = 0
 for plot in plots:
-    points = plot.points
-    rows = set([x[0] for x in points])
-    cols = set([x[1] for x in points])
-    sides = 0
-
-    for row in rows:
-        north = False
-        south = False
-        tiles = [tile for tile in plot.tiles if tile.point[0] == row]
-        for tile in tiles:
-            if "north" in tile.fence_dirs:
-                if not north:
-                    sides += 1
-                    north = True
-                    print(tile.point, 'adding north')
-            else:
-                north = False
-            if "south" in tile.fence_dirs:
-                if not south:
-                    sides += 1
-                    south = True
-                    print(tile.point, 'adding south')
-
-            else:
-                south = False
-    for col in cols:
-        east = False
-        west = False
-        tiles = [tile for tile in plot.tiles if tile.point[1] == col]
-        for tile in tiles:
-            if "east" in tile.fence_dirs:
-                if not east:
-                    sides += 1
-                    east = True
-                    print(tile.point, 'adding east')
-            else:
-                east = False
-            if "west" in tile.fence_dirs:
-                if not west:
-                    sides += 1
-                    west = True
-                    print(tile.point, 'adding west')
-            else:
-                west = False
-    print(sides)
-
-    # for col in cols:
-    #     filtered_rows = sorted([x[0] for x in points if x[1] == col])
-    #     print(filtered_rows)
-    
-    break
+    part2_total += plot.part2_price
+print(part2_total, "805814")
