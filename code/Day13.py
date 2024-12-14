@@ -22,14 +22,14 @@ Prize: X=18641, Y=10279""".split("\n\n")
 
 # print(machine_data[0])
 
-SHIFT = 10000000000000
+SHIFT = 10**13
 
 class Machine():
     def __init__(self, data):
         self.breakout(data)
+        self.a_count, self.b_count = self.line_mafs()
         self.total = self.total()
         
-
     def __repr__(self):
         return f"{self.a=}, {self.b=}, {self.prize=}"
     
@@ -42,36 +42,21 @@ class Machine():
         # PART 2
         self.prize = tuple(int(x)+SHIFT for x in re.findall(r"(\d{1,})", lines[2]))
 
-    def snek_math(self):
-        xdiff = (self.a[0], self.b[0])
-        ydiff = (self.a[1], self.b[1])
-        #local funciton for calculating determinat
-        def det(a,b):
-            return a[0] * b[1] - a[1] * b[0]
-        
-        div = det(xdiff, ydiff)
-        if div == 0:
-            print('lines dont intercsect homie')
-        
-        # Create lines using 2 known points
-        a1 = self.prize
-        a2 = (a1[0] - self.a[0], a1[1] - self.a[1])
-        a_line = (a1, a2)
+    def det(self, a,b):
+        return a[1] * b[0] - a[0] * b[1]
 
-        b1 = self.b
-        b2 = (0,0)
-        b_line = (b1, b2)
+    def line_mafs(self):
+        a_count = self.det(self.prize, self.b) / self.det(self.a, self.b)
+        a_change = self.a[0] * a_count
+        remaining = self.prize[0] - a_change
+        b_count = remaining / self.b[0]
 
-        d = (det(*a_line), det(*b_line))
-        x = det(d, xdiff)/div
-        y = det(d, ydiff)/div
-        
-        self.intersect = (x,y)
-        return x, y
+        return a_count, b_count
     
     def winnable(self):
-        x, y = self.snek_math()
-        if x == int(x) and y== int(y):
+        a = self.a_count
+        b = self.b_count
+        if a == int(a) and b== int(b):
             self.winnable = True
         else:
             self.winnable = False
@@ -79,14 +64,10 @@ class Machine():
     
     def total(self):
         if not self.winnable():
-            print("not winnable")
+            # print("not winnable")
             return 0
-        b_presses = self.intersect[0] / self.b[0]
-        a_presses = (self.prize[0] - self.intersect[0]) /self.a[0]
-        totals = (a_presses * 3 + b_presses, a_presses + b_presses * 3)
-        print(totals)
-        print(f"{a_presses=}, {b_presses=}, {min(totals)=}")
-        return min(totals)
+        total = self.a_count * 3 + self.b_count
+        return total
 
 # machines = [Machine(data) for data in test]
 machines = [Machine(data) for data in machine_data]
@@ -95,4 +76,3 @@ for machine in machines:
     total+= machine.total
 
 print(int(total))
-
