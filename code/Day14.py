@@ -1,17 +1,17 @@
 import numpy as np
 import re
+from utils import read_file
 
 class Bot():
-    def __init__(self, row, col, drow, dcol):
-        self.row = row
+    def __init__(self, row, col, dcol, drow):
         self.col = col
+        self.row = row
         self.dcol = dcol
         self.drow = drow
     
     def move(self):
-        self.row += self.dcol
-        self.col += self.drow
-        print(self.col, self.row)
+        self.row += self.drow
+        self.col += self.dcol
         # converting to a 0 range
         
         if self.col < 0:
@@ -23,15 +23,14 @@ class Bot():
             self.row += HEIGHT
         elif self.row >= HEIGHT:
             self.row -= HEIGHT        
-            
-        print(self.col, self.row)
+        
+    def __repr__(self):
+        return str(self.__dict__)
             
     @staticmethod
     def parse(string) -> "Bot":
         data = re.findall(r"(\d{1,}|-\d{1,})", string)
-        "p=0,4 v=3,-3"
-        print(data)
-        
+        "p=0,4 v=3,-3"        
         stats = []
         for item in data:
             if '-' in item:
@@ -53,15 +52,36 @@ class Da_Map():
         self.bots = self.add_bots(bot_data)
         
     def __repr__(self):
+        return str(self.grid)
+    
+    def score(self):
         self.grid = self.build_grid()
         self.place_bots()
-        return str(self.grid)
+        totals = []
+        final = 0
+        quads = self.quads()
+        for quad in quads:
+            nums = []
+            for row in quad:
+                nums += [int(x) for x in row if x != '.']
+            score = sum(nums)
+            totals.append(sum(nums))
+            if final:
+                final = final * score
+            else:
+                final = score        
+        return final
     
     def quads(self):
         mid_col = WIDTH - WIDTH//2
         mid_row = HEIGHT - HEIGHT//2
-        print(HEIGHT, mid_col)
-        print(WIDTH, mid_row)
+        
+        quads = [self.grid[:mid_row-1, :mid_col-1],  # top left
+                 self.grid[:mid_row-1, mid_col:],  # top right
+                 self.grid[mid_row:, :mid_col-1],  # bottom left
+                 self.grid[mid_row:, mid_col:]  # bottom right
+        ]
+        return quads
     
     def next_second(self):
         for bot in self.bots:
@@ -90,28 +110,30 @@ class Da_Map():
             bots.append(Bot.parse(string))
         return bots
 
-HEIGHT = 7
-WIDTH = 11
-# BOTS = ["p=2,4 v=0,1",
-#         "p=2,4 v=0,-1",
-#         "p=2,4 v=1,0",
-#         "p=2,4 v=-1,0"]
-BOTS = """p=0,4 v=3,-3
-p=6,3 v=-1,-3
-p=10,3 v=-1,2
-p=2,0 v=2,-1
-p=0,0 v=1,3
-p=3,0 v=-2,-2
-p=7,6 v=-1,-3
-p=3,0 v=-1,-2
-p=9,3 v=2,3
-p=7,3 v=-1,2
-p=2,4 v=2,-3
-p=9,5 v=-3,-3""".split("\n")
+HEIGHT = 103
+WIDTH = 101
+
+# BOTS = """p=0,4 v=3,-3
+# p=6,3 v=-1,-3
+# p=10,3 v=-1,2
+# p=2,0 v=2,-1
+# p=0,0 v=1,3
+# p=3,0 v=-2,-2
+# p=7,6 v=-1,-3
+# p=3,0 v=-1,-2
+# p=9,3 v=2,3
+# p=7,3 v=-1,2
+# p=2,4 v=2,-3
+# p=9,5 v=-3,-3""".split("\n")
+
+BOTS = read_file("input/day14.txt")
 # print(BOTS)
 # Bot.parse(BOTS[0])
 map = Da_Map(BOTS)
-print(map)
+# print(map.bots)
+# print(map)
 for i in range(100):
     map.next_second()
-print(map)
+    # print(map)
+# print(map)
+print(map.score())
