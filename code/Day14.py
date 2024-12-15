@@ -1,6 +1,9 @@
 import numpy as np
 import re
+import math
 from utils import read_file
+
+np.set_printoptions(threshold=np.inf)
 
 class Bot():
     def __init__(self, row, col, dcol, drow):
@@ -55,8 +58,7 @@ class Da_Map():
         return str(self.grid)
     
     def score(self):
-        self.grid = self.build_grid()
-        self.place_bots()
+        self.build_grid()
         totals = []
         final = 0
         quads = self.quads()
@@ -69,7 +71,9 @@ class Da_Map():
             if final:
                 final = final * score
             else:
-                final = score        
+                final = score
+
+        self.totals = totals
         return final
     
     def quads(self):
@@ -86,6 +90,7 @@ class Da_Map():
     def next_second(self):
         for bot in self.bots:
             bot.move()
+        self.build_grid()
     
     def place_bots(self):
         for bot in self.bots:
@@ -102,7 +107,8 @@ class Da_Map():
             [['.' for y in range(self.width)]
         for x in range(self.height)]
                     )
-        return grid
+        self.grid = grid
+        self.place_bots()
 
     def add_bots(self, bot_data):
         bots = []
@@ -132,8 +138,25 @@ BOTS = read_file("input/day14.txt")
 map = Da_Map(BOTS)
 # print(map.bots)
 # print(map)
-for i in range(100):
+def write_grid(grid):
+    with open("output.txt","a") as file:
+        for line in grid:
+            file.write(str(''.join(line))+ "\n")
+
+        file.write("--------------------------------------\n")
+
+seconds = {}
+best_grid = []
+lowest_safety = math.inf
+best_iteration = 0
+for i in range(WIDTH*HEIGHT):
+    print(i)
+    score = map.score()
+    if score < lowest_safety:
+        lowest_safety = score
+        best_iteration = i
+        best_grid = map.grid
     map.next_second()
-    # print(map)
-# print(map)
-print(map.score())
+
+write_grid(best_grid)
+print(best_iteration)
