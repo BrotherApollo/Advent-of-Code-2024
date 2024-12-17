@@ -1,30 +1,55 @@
 from utils import read_file
 import numpy as np
 
+
 class Maze(object):
     def __init__(self, maze):
         self.maze =  maze
-        self.tiles = self.BFS()
-        self.filter_count_sides()
-        self.set_stats()
+        self.set_start_end()
 
     def __repr__(self):
         return str(self.maze)
+
+    def get_neighbors(self, row, col):
+        neighbors = [
+            (row-1, col),
+            (row+1, col),
+            (row, col+1),
+            (row, col-1),
+        ]
+        return neighbors
         
     def BFS(self):
-        tiles = []
         checked = []
-        queue = [self.starting_point]
+        queue = [seed_path]
         while queue:
-            point = queue.pop(0)
-            if point.point in checked:
-                continue
-            checked.append(point.point)
-            if point.symbol == self.symbol:
-                tiles.append(point)
-                queue += point.get_neighbors()
-        self.points = [x.point for x in tiles]
-        return tiles
+            curr_path = queue.pop(0)
+            curr_node = curr_path[-1]
+            row, col = curr_node
+            # End condition
+            if self.maze[row][col] == "E":
+                return curr_path
+            
+            # Main BFS logic
+            checked.append(curr_node)
+            neighbors = self.get_neighbors()
+            for neighbor in neighbors:
+                n_row, n_col = neighbor
+                if self.maze[n_row][n_col] == '#':
+                    continue
+                new_path = deepcopy(curr_path)
+                new_path.append(neighbor)
+                queue.appen(new_path)
+
+
+    
+    def set_start_end(self) -> None:
+        for y, row in enumerate(self.maze):
+            for x, item in enumerate(self.maze[row]):
+                if item == "E":
+                    self.end = (y, x)
+                if item == "S":
+                    self.start = (y, x)
     
 
 test = """###############
