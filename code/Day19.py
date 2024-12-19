@@ -1,5 +1,8 @@
+from copy import deepcopy
+from functools import cache
 
-towels, designs = """r, wr, b, g, bwu, rb, gb, br
+
+test = """r, wr, b, g, bwu, rb, gb, br
 
 brwrr
 bggr
@@ -9,18 +12,31 @@ ubwu
 bwurrg
 brgr
 bbrgwb""".split("\n\n")
-designs = designs.split("\n")
-towels = [x.strip() for x in towels.split(",")]
-print(towels)
 
 
-test = designs[0]
-print(f"goal: {test}")
+@cache
+def check_chunk(design):
+    if design == "": 
+        return 1
+    count = 0
+    for i in range(min(len(design), maxlen)+1):
+        if design[:i] in patterns:
+            count += check_chunk(design[i:])
+            # print(future, design[i:])
+    return count
+            
+test_designs = test[1].split("\n")
+test_towels = [x.strip() for x in test[0].split(", ")]
 
-towels_to_consider = []
-for towel in towels:
-    if towel in test:
-        print(towel)
-        towels_to_consider.append(towel)
+with open("input/day19.txt", "r") as file:
+    patterns, designs = file.read().split("\n\n")
+    patterns = [x for x in patterns.split(', ')]
+    designs = designs.split('\n')
 
-print(towels_to_consider)
+# print(test_designs, test_towels)
+maxlen = max([len(x) for x in patterns])
+
+
+print(sum([check_chunk(design) for design in designs]))
+    
+    
