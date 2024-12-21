@@ -91,21 +91,22 @@ class Mazerunner():
                 new.append(neighbor)
                 queue.append(new)
     
-    def cheat_neighbors(self, point):
+    def cheat_neighbors(self, point, dist=20):
+        points = []
         row, col = point
-        neighbors = [
-            # Cross
-            (row - 2, col),
-            (row + 2, col),
-            (row, col - 2),
-            (row, col + 2),
-            # Corners
-            (row - 1, col - 1),
-            (row + 1, col + 1),
-            (row + 1, col - 1),
-            (row - 1, col + 1),
-        ]
-        return [x for x in neighbors if self.valid(x)]
+        for nr in range(len(self.maze)):
+            for nc in range(len(self.maze[0])):
+                row_delta = abs(row-nr)
+                col_delta = abs(col-nc)
+                if row_delta + col_delta <= dist:
+                    points.append((nr, nc))
+        return [x for x in points if self.valid(x)]
+    
+    def dist(self, a, b):
+        row = abs(a[0] - b[0])
+        col = abs(a[1] - b[1])
+        dist = row + col
+        return dist
             
     def cheat(self):
         queue = deepcopy(self.path)
@@ -116,13 +117,14 @@ class Mazerunner():
             curr_steps = self.dists[cr][cc]
             print(f"{curr_steps=}")
             curr_cheats = []
-            for neighbor in self.cheat_neighbors(node):
+            neighbors = self.cheat_neighbors(node)
+            for neighbor in neighbors:
                 nr, nc = neighbor
                 nsteps = self.dists[nr][nc]
                 if nsteps == -1: continue
-                diff = int(curr_steps - nsteps) + 2
-                print(nsteps, diff)
-                print
+                cheat_dist = self.dist(node, neighbor)
+                diff = int(curr_steps - nsteps) + cheat_dist
+                # print(nsteps, diff)
                 if diff >= 0: continue
                 curr_cheats.append(diff)            
             cheats[int(curr_steps)] = curr_cheats    
@@ -141,11 +143,15 @@ cheats = runner.cheat()
 tally = defaultdict(int)
 for point, lst in cheats.items():
     for score in lst:
-        if score > -100:continue
+        if score > -100: continue
         tally[score] += 1
     
 print(tally)
 
 print(sum(tally.values()))
 
+
+# print(runner.cheat_neighbors(runner.start))
+
+# print(runner.dist(runner.start, runner.stop))
 
