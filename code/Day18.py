@@ -54,7 +54,6 @@ def neighbors(point):
     return [x for x in neighbors if valid(x)]
 
 def BFS(grid):
-    global size
     queue = [[(0,0)]]
     checked = []
     while queue:
