@@ -1,5 +1,6 @@
 import numpy as np
 from copy import deepcopy
+import math
 
 data = """169A
 279A
@@ -52,25 +53,27 @@ def find(item, grid):
             if grid[row][col] == item:
                 return (row, col)
     
-    raise KeyError("item not found in grid")
+    raise KeyError(f"{item} not found in grid")
 
 def BFS(start:tuple, stop:str, grid:np.array) -> list:
     queue = [[start]]
     checked = []
+    solutions = []
     while queue:
         path = queue.pop(0)
         node = path[-1]
-        if node in checked: continue
         row, col = node
-        if grid[row][col] == stop: return path
+        if grid[row][col] == stop: solutions.append(path)
+        if node in checked: continue
+        checked.append(node)
         neighbors = [x for x in get_neighbors(node) if valid(x, grid)]
         for neighbor in neighbors:
             nr, nc = neighbor
             if grid[nr][nc] == ".": continue
-            # print(grid[nr][nc])
             new_path = deepcopy(path)
             new_path.append(neighbor)
             queue.append(new_path)
+    return [to_arrows(x) for x in solutions]
             
 def to_arrows(presses:list):
     curr = presses[0]
@@ -90,60 +93,72 @@ def get_dir(a, b):
     }
     return dirs[diff]
 
-def sort_button(string):
-    # print(string)
-    digits = sorted([ord(x) for x in string], reverse=True)
-    # print(digits)
-    string = [chr(x) for x in digits]
-    # print(string)
-    return ''.join(string)
+# def sort_button(string):
+#     counter = {}
+#     if "<" in string and "v" in string:
+#         first = "<"
+#     elif
+#     else:
+#         first = string[0]
+#     for char in string:
+#         if counter.get(char):
+#             counter[char] += 1
+#         else:
+#             counter[char] = 1
+            
+#     output = [first for x in range(counter[first])]
+    
+#     for key, value in counter.items():
+#         if key == first: continue
+#         output.extend([key for x in range(value)])
+    
+#     return "".join(output)
 
 def bot_depth(keys:list):
     output = []
     start = find("A", remote)
     for button in keys:
-        button = sort_button(button)
+        # button = sort_button(button)
         # print(button, start)
         for char in button:
-            path = BFS(start, char, remote)
+            paths = BFS(start, char, remote)
+            # paths = filter_paths(paths)
             start = find(char, remote)
-            output.append(to_arrows(path))
+            output.append(paths)
         # print(button)
     
     return output
 
-total = 0
-for code in test:
-    start = find('A', keypad)
+def main(data):
+    total = 0
+    paths = []
+    for code in data:
+        start = find('A', keypad)
 
-    arrows = []
-    print(code)
-    value = int(code.strip("A"))
-    # print(value)
-    for char in code:
-        stop = char
-        # print(char)
-        path = BFS(start, stop, keypad)
-        arrow = to_arrows(path)
-        # print(arrow)
-        arrows.append(arrow)
-        start = find(stop, keypad)
+        print(code)
+        value = int(code.strip("A"))
+        # print(value)
+        for char in code:
+            stop = char
+            # print(char)
+            curr_paths = BFS(start, stop, keypad)
+            curr_paths = filter_paths(curr_paths)
+            start = find(stop, keypad)
+            paths.append(curr_paths)
+    # return paths
+        for i in range(2):
+            paths = [bot_depth(x) for x in paths]
+    return paths
 
-    for i in range(2):
-        # print(''.join(arrows))
-        arrows = bot_depth(arrows)
+    #     # print(''.join(arrows))
 
-    # print(''.join(arrows))
+    #     answer = ''.join(arrows)
+    #     print(len(answer))
+    #     total += len(answer) * value
+    # print(f"{total}")
 
-    answer = ''.join(arrows)
-    print(len(answer))
-    total += len(answer) * value
-print(f"{total}")
-# print("------------")
-
-temp = '>>^A'
-sort_button("<^<v>")
-# temp1 = bot_depth(temp)
-# temp2 = bot_depth(temp1)
-# print(''.join(bot_depth(temp)))
-# print(''.join(temp2))
+def filter_paths(paths):
+    best = min([len(x) for x in paths])
+    return [x for x in paths if len(x) == best]
+    
+print(main(["379A"]))
