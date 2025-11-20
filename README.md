@@ -7,9 +7,9 @@ folder structure is year/language
 ## Languages used by year
 
 Year | Primary | Extra Languages | Notes
------|---------|-----------------
+-|-|-|-
 2015 | Python | - | - 
-2024 | Python  | - | First year DNF
+2024 | Python  | - | 39 ★ ; First year DNF
 2025 | TypeScript | Python, Rust | Stretch goal, complete in at least two languages
 
 ### links
