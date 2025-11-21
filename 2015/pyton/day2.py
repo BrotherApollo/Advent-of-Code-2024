@@ -36,6 +36,6 @@ for nums in data:
     ribbonTotal += calcRequriedRibbon(nums)
     # break
 
-
-print(total)
-print(ribbonTotal)
+print("Required materials for wrapping gifts:")
+print(f"Paper: {total} square feet")
+print(f"Ribbon: {ribbonTotal} feet")
