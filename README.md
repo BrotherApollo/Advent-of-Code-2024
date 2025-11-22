@@ -8,9 +8,13 @@ folder structure is year/language
 
 Year | Primary | Extra Languages | Notes
 -|-|-|-
-2015 | Python | - | - 
+2015 | Python | Javascript | - 
 2024 | Python  | - | 39 ★ ; First year DNF
 2025 | TypeScript | Python, Rust | Stretch goal, complete in at least two languages
+
+## Javascript
+I am using p5 sketches for solving with Javascript. Add a `data.txt` file with you puzzle input to the folder.
+Then run `python3 -m http.server 8000` to locally host the sketch.
 
 ### links
 [2015](./2015/)
