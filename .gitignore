@@ -8,3 +8,5 @@ node_modules/
 dist/
 *.log
 .DS_Store
+**/p5.js
+**/p5.sound.min.js
